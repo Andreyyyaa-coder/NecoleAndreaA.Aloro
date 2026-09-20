@@ -61,7 +61,15 @@ def get_profile():
         "skills": "mobile gaming, editing"
     })
 
-
+@app.route('/entertainment')
+def get_entertainment():
+    return jsonify({
+        "favorite_movie": "Avengers: Endgame",
+        "favorite_song": "Die With A Smile",
+        "favorite_game": "Mobile Legends",
+        "hobby": "Watching movies and playing mobile games"
+    })
+    
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
 
