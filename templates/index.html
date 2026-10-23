@@ -1,0 +1,198 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student API Interface</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 700px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f5f0ff;
+            color: #302344;
+        }
+
+        h1 {
+            color: #7046a8;
+        }
+
+        section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid #ddd2ef;
+            border-radius: 10px;
+        }
+
+        h2 {
+            color: #7046a8;
+        }
+
+        button {
+            padding: 10px 14px;
+            margin: 5px 0;
+            background: #7046a8;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        input {
+            padding: 9px;
+            border: 1px solid #c9b8e4;
+            border-radius: 6px;
+        }
+
+        .result {
+            margin-top: 15px;
+            padding: 10px;
+            background: #faf7ff;
+            border-radius: 6px;
+            overflow-wrap: anywhere;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Student API Interface</h1>
+    <p>Welcome! Retrieve your student information and try the Greeting API.</p>
+
+    <section>
+        <h2>Student Information</h2>
+
+        <button onclick="loadStudent()">Load Student Information</button>
+
+        <div id="result" class="result">
+            Student information will appear here.
+        </div>
+    </section>
+
+    <section>
+        <h2>Greeting API</h2>
+
+        <input
+            type="text"
+            id="nameInput"
+            placeholder="Enter your first name"
+        >
+
+        <button onclick="sayHello()">Say Hello</button>
+
+        <p id="greeting" class="result">
+            Your greeting will appear here.
+        </p>
+    </section>
+
+    <section>
+        <h2>Course Information</h2>
+
+        <button onclick="loadCourse()">Load Course Information</button>
+
+        <div id="courseResult" class="result">
+            Course information will appear here.
+        </div>
+    </section>
+
+    <section>
+        <h2>My Entertainment ♡</h2>
+
+        <button onclick="loadEntertainment()">Show My Favorites</button>
+
+        <div id="entertainmentResult" class="result">
+            Your favorites will appear here.
+        </div>
+    </section>
+
+    <script>
+        async function getData(url) {
+            const response = await fetch(url);
+
+            if (!response.ok) {
+                throw new Error("HTTP error: " + response.status);
+            }
+
+            return await response.json();
+        }
+
+        function displayData(elementId, data) {
+            const result = document.getElementById(elementId);
+            result.replaceChildren();
+
+            for (const [key, value] of Object.entries(data)) {
+                const p = document.createElement("p");
+                const bold = document.createElement("b");
+
+                bold.textContent = key.replaceAll("_", " ") + ": ";
+
+                p.appendChild(bold);
+                p.appendChild(document.createTextNode(String(value)));
+                result.appendChild(p);
+            }
+        }
+
+        async function loadStudent() {
+            const result = document.getElementById("result");
+            result.textContent = "Loading...";
+
+            try {
+                const data = await getData("/student");
+                displayData("result", data);
+            } catch (error) {
+                result.textContent = "Unable to retrieve student information.";
+                console.error(error);
+            }
+        }
+
+        async function sayHello() {
+            const name =
+                document.getElementById("nameInput").value.trim()
+                || "Student";
+
+            const greeting = document.getElementById("greeting");
+            greeting.textContent = "Loading greeting...";
+
+            try {
+                const data = await getData(
+                    "/hello?name=" + encodeURIComponent(name)
+                );
+
+                greeting.textContent = data.message;
+            } catch (error) {
+                greeting.textContent = "Unable to retrieve greeting.";
+                console.error(error);
+            }
+        }
+
+        async function loadCourse() {
+            const result = document.getElementById("courseResult");
+            result.textContent = "Loading...";
+
+            try {
+                const data = await getData("/course");
+                displayData("courseResult", data);
+            } catch (error) {
+                result.textContent = "Unable to retrieve course information.";
+                console.error(error);
+            }
+        }
+
+        async function loadEntertainment() {
+            const result = document.getElementById("entertainmentResult");
+            result.textContent = "Loading...";
+
+            try {
+                const data = await getData("/entertainment");
+                displayData("entertainmentResult", data);
+            } catch (error) {
+                result.textContent = "Unable to retrieve entertainment data.";
+                console.error(error);
+            }
+        }
+    </script>
+</body>
+</html>

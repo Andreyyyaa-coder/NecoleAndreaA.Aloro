@@ -1,11 +1,12 @@
-from flask import Flask, jsonify, request
+
+from flask import Flask, jsonify, request, render_template
 
 app = Flask(__name__)
 
 
 @app.route('/')
 def home():
-    return "Welcome Student!"
+    return render_template('index.html')
 
 
 @app.route('/student')
@@ -49,6 +50,7 @@ def greet():
         "message": f"Hello {name} from {program} {year} {section}!"
     })
 
+
 @app.route('/profile')
 def get_profile():
     return jsonify({
@@ -61,6 +63,7 @@ def get_profile():
         "skills": "mobile gaming, editing"
     })
 
+
 @app.route('/entertainment')
 def get_entertainment():
     return jsonify({
@@ -69,7 +72,7 @@ def get_entertainment():
         "favorite_game": "Mobile Legends",
         "hobby": "Watching movies and playing mobile games"
     })
-    
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
-
