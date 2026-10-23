@@ -4,12 +4,13 @@ from flask import Flask, jsonify, request, render_template
 app = Flask(__name__)
 
 
-@app.route('/')
+@app.route("/")
 def home():
-    return render_template('index.html')
+    return render_template("index.html")
 
 
-@app.route('/student')
+# Student Information API
+@app.route("/student")
 def get_student():
     return jsonify({
         "student_id": "24-00286",
@@ -20,15 +21,17 @@ def get_student():
     })
 
 
-@app.route('/hello')
+# Greeting API
+@app.route("/hello")
 def say_hello():
-    name = request.args.get('name', 'Necole Andrea')
+    name = request.args.get("name", "Necole")
     return jsonify({
         "message": f"Hello, {name}!"
     })
 
 
-@app.route('/course')
+# Course Information API
+@app.route("/course")
 def say_course():
     return jsonify({
         "course_code": "IT3120",
@@ -39,19 +42,24 @@ def say_course():
     })
 
 
-@app.route('/greet')
+# Personalized Greeting API
+@app.route("/greet")
 def greet():
-    name = request.args.get('name', 'Necole Andrea Aloro')
-    program = request.args.get('program', 'BSIT')
-    year = request.args.get('year', '3')
-    section = request.args.get('section', 'A')
+    name = request.args.get("name", "Necole Andrea Aloro")
+    program = request.args.get("program", "BSIT")
+    year = request.args.get("year", "3")
+    section = request.args.get("section", "A")
 
     return jsonify({
-        "message": f"Hello {name} from {program} {year} {section}!"
+        "message": (
+            f"Hello {name} from "
+            f"{program} {year} {section}!"
+        )
     })
 
 
-@app.route('/profile')
+# Student Profile API
+@app.route("/profile")
 def get_profile():
     return jsonify({
         "student_id": "24-00286",
@@ -60,11 +68,12 @@ def get_profile():
         "year": 3,
         "section": "A",
         "gmail": "aloronecoleandrea@isufst.edu.ph",
-        "skills": "mobile gaming, editing"
+        "skills": "Mobile gaming, editing"
     })
 
 
-@app.route('/entertainment')
+# Custom Entertainment API
+@app.route("/entertainment")
 def get_entertainment():
     return jsonify({
         "favorite_movie": "Avengers: Endgame",

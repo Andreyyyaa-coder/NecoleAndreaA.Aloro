@@ -4,8 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Student API Interface</title>
+    <title>Student API Web Interface</title>
 
     <style>
         * {
@@ -13,69 +12,81 @@
         }
 
         body {
+            margin: 0;
+            padding: 30px 16px;
             font-family: Arial, sans-serif;
-            max-width: 750px;
-            margin: 40px auto;
-            padding: 20px;
             background: #f5f0ff;
-            color: #302344;
-            line-height: 1.6;
+            color: #302345;
         }
 
         header {
+            max-width: 850px;
+            margin: 0 auto 25px;
+            padding: 25px;
             text-align: center;
-            margin-bottom: 30px;
+            background: linear-gradient(135deg, #7950c8, #a985ed);
+            color: white;
+            border-radius: 18px;
         }
 
-        h1 {
-            color: #7046a8;
-            margin-bottom: 8px;
-        }
-
-        h2 {
-            color: #7046a8;
+        header h1 {
             margin-top: 0;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            margin-bottom: 0;
+        }
+
+        main {
+            max-width: 850px;
+            margin: auto;
         }
 
         section {
             background: white;
             padding: 22px;
-            margin: 20px 0;
-            border: 1px solid #e2d5f5;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(80, 50, 120, 0.06);
+            margin-bottom: 20px;
+            border-radius: 14px;
+            box-shadow: 0 4px 15px rgba(65, 40, 100, 0.08);
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #7043b5;
         }
 
         button {
-            padding: 10px 16px;
-            margin: 5px 0;
-            background: #7046a8;
+            background: #7950c8;
             color: white;
             border: none;
-            border-radius: 7px;
+            border-radius: 8px;
+            padding: 11px 16px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 15px;
+            margin-top: 8px;
         }
 
         button:hover {
-            background: #54317f;
+            background: #5e369f;
         }
 
         input {
             width: 100%;
             max-width: 350px;
             padding: 11px;
-            margin: 5px 0;
-            border: 1px solid #c8b7e3;
-            border-radius: 7px;
-            font-size: 14px;
+            margin: 8px 0;
+            border: 1px solid #cfc0e8;
+            border-radius: 8px;
+            font-size: 15px;
         }
 
         .result {
-            margin-top: 15px;
-            padding: 14px;
-            background: #faf7ff;
-            border: 1px solid #e8def5;
+            display: none;
+            margin-top: 16px;
+            padding: 15px;
+            background: #f8f4ff;
+            border-left: 4px solid #9065d5;
             border-radius: 8px;
             overflow-wrap: anywhere;
         }
@@ -84,211 +95,187 @@
             margin: 8px 0;
         }
 
-        .empty {
-            color: #756985;
+        .error {
+            color: #b42318;
         }
 
         footer {
             text-align: center;
-            color: #756985;
+            color: #766b86;
+            margin-top: 25px;
             font-size: 13px;
-            margin-top: 30px;
-        }
-
-        @media (max-width: 600px) {
-            body {
-                margin: 15px auto;
-                padding: 14px;
-            }
-
-            section {
-                padding: 16px;
-            }
         }
     </style>
 </head>
 
 <body>
-
     <header>
-        <h1>Student API Interface</h1>
-        <p>Welcome! Explore my student information, greeting, course, and favorites.</p>
+        <h1>Student API Web Interface</h1>
+        <p>Welcome! Explore my student information and APIs.</p>
     </header>
 
-    <!-- Student Information API -->
-    <section>
-        <h2>Student Information</h2>
-        <p>Click the button to retrieve my student information.</p>
+    <main>
+        <!-- Student Information -->
+        <section>
+            <h2>Student Information</h2>
+            <p>Retrieve student information from the Flask API.</p>
+            <button onclick="loadStudent()">Show Student Information</button>
+            <div id="studentResult" class="result" aria-live="polite"></div>
+        </section>
 
-        <button onclick="loadStudent()">
-            Load Student Information
-        </button>
+        <!-- Greeting API -->
+        <section>
+            <h2>Greeting API</h2>
+            <p>Enter your first name to receive a greeting.</p>
 
-        <div id="studentResult" class="result" aria-live="polite">
-            <p class="empty">Student information will appear here.</p>
-        </div>
-    </section>
+            <form id="greetingForm">
+                <label for="nameInput">Your first name:</label><br>
+                <input
+                    type="text"
+                    id="nameInput"
+                    name="name"
+                    placeholder="Enter your first name"
+                    value="Necole"
+                    required
+                >
+                <br>
+                <button type="submit">Say Hello</button>
+            </form>
 
-    <!-- Greeting API -->
-    <section>
-        <h2>Greeting API</h2>
-        <p>Enter your first name to receive a greeting.</p>
+            <div id="greetingResult" class="result" aria-live="polite"></div>
+        </section>
 
-        <input
-            type="text"
-            id="nameInput"
-            placeholder="Enter your first name"
-            aria-label="Your first name"
-        >
+        <!-- Course Information -->
+        <section>
+            <h2>Course Information</h2>
+            <p>View the course details returned by the API.</p>
+            <button onclick="loadCourse()">Show Course Information</button>
+            <div id="courseResult" class="result" aria-live="polite"></div>
+        </section>
 
-        <br>
-
-        <button onclick="sayHello()">Say Hello</button>
-
-        <p id="greeting" class="result" aria-live="polite">
-            Your greeting will appear here.
-        </p>
-    </section>
-
-    <!-- Course Information API -->
-    <section>
-        <h2>Course Information</h2>
-        <p>Retrieve course details from the course API.</p>
-
-        <button onclick="loadCourse()">
-            Load Course Information
-        </button>
-
-        <div id="courseResult" class="result" aria-live="polite">
-            <p class="empty">Course information will appear here.</p>
-        </div>
-    </section>
-
-    <!-- Additional Task: Custom Entertainment API -->
-    <section>
-        <h2>My Entertainment Favorites ♡</h2>
-        <p>
-            Discover my favorite movie, song, game, and hobby
-            using my custom entertainment API.
-        </p>
-
-        <button onclick="loadEntertainment()">
-            Show My Favorites
-        </button>
-
-        <div id="entertainmentResult" class="result" aria-live="polite">
-            <p class="empty">Your entertainment information will appear here.</p>
-        </div>
-    </section>
+        <!-- Custom API Endpoint -->
+        <section>
+            <h2>My Entertainment Favorites</h2>
+            <p>This is my custom API endpoint.</p>
+            <button onclick="loadEntertainment()">Show My Favorites</button>
+            <div id="entertainmentResult" class="result" aria-live="polite"></div>
+        </section>
+    </main>
 
     <footer>
-        Student API Interface | BSIT 3A | AY 2026-2027
+        <p>Student API Project | Flask and Python</p>
     </footer>
 
     <script>
-        // Shared function for requesting JSON from Flask APIs
-        async function fetchData(endpoint) {
-            const response = await fetch(endpoint);
-
-            if (!response.ok) {
-                throw new Error("HTTP error: " + response.status);
-            }
-
-            return await response.json();
-        }
-
-        // Display returned JSON fields safely on the webpage
+        // Display JSON data in a readable format.
         function displayData(elementId, data) {
-            const container = document.getElementById(elementId);
-            container.replaceChildren();
+            const result = document.getElementById(elementId);
+            result.replaceChildren();
 
             for (const [key, value] of Object.entries(data)) {
                 const paragraph = document.createElement("p");
                 const label = document.createElement("strong");
 
-                const readableLabel = key
+                label.textContent = key
                     .replaceAll("_", " ")
-                    .replace(/\b\w/g, character => character.toUpperCase());
-
-                label.textContent = readableLabel + ": ";
+                    .replace(/\b\w/g, letter => letter.toUpperCase()) + ": ";
 
                 paragraph.appendChild(label);
-                paragraph.appendChild(
-                    document.createTextNode(String(value))
-                );
+                paragraph.appendChild(document.createTextNode(String(value)));
+                result.appendChild(paragraph);
+            }
 
-                container.appendChild(paragraph);
+            result.classList.remove("error");
+            result.style.display = "block";
+        }
+
+        // Reusable function for retrieving API information.
+        async function fetchData(url, elementId) {
+            const result = document.getElementById(elementId);
+
+            result.style.display = "block";
+            result.classList.remove("error");
+            result.textContent = "Loading...";
+
+            try {
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    throw new Error("HTTP error: " + response.status);
+                }
+
+                const data = await response.json();
+                displayData(elementId, data);
+
+                return data;
+            } catch (error) {
+                console.error("API request failed:", error);
+                result.classList.add("error");
+                result.textContent =
+                    "Unable to retrieve information. Please try again.";
+                return null;
             }
         }
 
-        // Step 7: Load student information
+        // Student Information
         async function loadStudent() {
-            const result = document.getElementById("studentResult");
-            result.textContent = "Loading student information...";
-
-            try {
-                const data = await fetchData("/student");
-                displayData("studentResult", data);
-            } catch (error) {
-                result.textContent =
-                    "Unable to retrieve student information.";
-                console.error(error);
-            }
+            await fetchData("/student", "studentResult");
         }
 
-        // Step 8: Call the greeting API
-        async function sayHello() {
-            const name =
-                document.getElementById("nameInput").value.trim()
-                || "Student";
+        // Greeting API
+        document.getElementById("greetingForm").addEventListener(
+            "submit",
+            async function(event) {
+                event.preventDefault();
 
-            const greeting = document.getElementById("greeting");
-            greeting.textContent = "Loading greeting...";
+                const name = document.getElementById("nameInput").value.trim();
+                const result = document.getElementById("greetingResult");
 
-            try {
-                const data = await fetchData(
-                    "/hello?name=" + encodeURIComponent(name)
-                );
+                if (!name) {
+                    result.style.display = "block";
+                    result.classList.add("error");
+                    result.textContent = "Please enter your first name.";
+                    return;
+                }
 
-                greeting.textContent = data.message;
-            } catch (error) {
-                greeting.textContent = "Unable to retrieve greeting.";
-                console.error(error);
+                result.style.display = "block";
+                result.classList.remove("error");
+                result.textContent = "Getting your greeting...";
+
+                try {
+                    const url = "/hello?name=" + encodeURIComponent(name);
+                    const response = await fetch(url);
+
+                    if (!response.ok) {
+                        throw new Error("HTTP error: " + response.status);
+                    }
+
+                    const data = await response.json();
+
+                    if (!data.message) {
+                        throw new Error("Greeting message is missing.");
+                    }
+
+                    result.classList.remove("error");
+                    result.textContent = data.message;
+                } catch (error) {
+                    console.error("Greeting API failed:", error);
+                    result.classList.add("error");
+                    result.textContent =
+                        "Unable to retrieve greeting. Please try again.";
+                }
             }
-        }
+        );
 
-        // Load course information from the /course endpoint
+        // Course Information
         async function loadCourse() {
-            const result = document.getElementById("courseResult");
-            result.textContent = "Loading course information...";
-
-            try {
-                const data = await fetchData("/course");
-                displayData("courseResult", data);
-            } catch (error) {
-                result.textContent =
-                    "Unable to retrieve course information.";
-                console.error(error);
-            }
+            await fetchData("/course", "courseResult");
         }
 
-        // Additional Task: Connect to the custom /entertainment endpoint
+        // Custom Entertainment Endpoint
         async function loadEntertainment() {
-            const result =
-                document.getElementById("entertainmentResult");
-
-            result.textContent = "Loading entertainment information...";
-
-            try {
-                const data = await fetchData("/entertainment");
-                displayData("entertainmentResult", data);
-            } catch (error) {
-                result.textContent =
-                    "Unable to retrieve entertainment information.";
-                console.error(error);
-            }
+            await fetchData("/entertainment", "entertainmentResult");
         }
     </script>
-
 </body>
 </html>
