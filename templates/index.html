@@ -51,9 +51,12 @@
             box-shadow: 0 4px 15px rgba(65, 40, 100, 0.08);
         }
 
+        h2, h3 {
+            color: #7043b5;
+        }
+
         h2 {
             margin-top: 0;
-            color: #7043b5;
         }
 
         button {
@@ -71,7 +74,7 @@
             background: #5e369f;
         }
 
-        input {
+        input, select {
             width: 100%;
             max-width: 350px;
             padding: 11px;
@@ -79,6 +82,8 @@
             border: 1px solid #cfc0e8;
             border-radius: 8px;
             font-size: 15px;
+            background: white;
+            color: #302345;
         }
 
         .result {
@@ -97,6 +102,19 @@
 
         .error {
             color: #b42318;
+        }
+
+        .student-record {
+            padding: 12px;
+            margin: 10px 0;
+            background: #f8f4ff;
+            border-left: 4px solid #9065d5;
+            border-radius: 8px;
+            overflow-wrap: anywhere;
+        }
+
+        .student-record p {
+            margin: 5px 0;
         }
 
         footer {
@@ -119,7 +137,11 @@
         <section>
             <h2>Student Information</h2>
             <p>Retrieve student information from the Flask API.</p>
-            <button onclick="loadStudent()">Show Student Information</button>
+
+            <button type="button" onclick="loadStudent()">
+                Show Student Information
+            </button>
+
             <div id="studentResult" class="result" aria-live="polite"></div>
         </section>
 
@@ -130,6 +152,7 @@
 
             <form id="greetingForm">
                 <label for="nameInput">Your first name:</label><br>
+
                 <input
                     type="text"
                     id="nameInput"
@@ -138,7 +161,9 @@
                     value="Necole"
                     required
                 >
+
                 <br>
+
                 <button type="submit">Say Hello</button>
             </form>
 
@@ -149,25 +174,64 @@
         <section>
             <h2>Course Information</h2>
             <p>View the course details returned by the API.</p>
-            <button onclick="loadCourse()">Show Course Information</button>
+
+            <button type="button" onclick="loadCourse()">
+                Show Course Information
+            </button>
+
             <div id="courseResult" class="result" aria-live="polite"></div>
         </section>
 
-        <!-- Custom API Endpoint -->
+        <!-- Entertainment Favorites -->
         <section>
             <h2>My Entertainment Favorites</h2>
             <p>This is my custom API endpoint.</p>
-            <button onclick="loadEntertainment()">Show My Favorites</button>
+
+            <button type="button" onclick="loadEntertainment()">
+                Show My Favorites
+            </button>
+
             <div id="entertainmentResult" class="result" aria-live="polite"></div>
+        </section>
+
+        <!-- SQLite Database Records -->
+        <section id="database-students">
+            <h2>Students from Database</h2>
+            <p>View student records retrieved from the SQLite database.</p>
+
+            <button type="button" onclick="loadStudents()">
+                Load Students
+            </button>
+
+            <div id="studentList" aria-live="polite"></div>
+
+            <hr>
+
+            <h3>Find Students by Program</h3>
+
+            <label for="programInput">Select Program:</label><br>
+
+            <select id="programInput">
+                <option value="BSIT">BSIT</option>
+                <option value="BSN">BSN</option>
+            </select>
+
+            <br>
+
+            <button type="button" onclick="loadStudentsByProgram()">
+                Filter Students
+            </button>
+
+            <div id="programStudentList" aria-live="polite"></div>
         </section>
     </main>
 
     <footer>
-        <p>Student API Project | Flask and Python</p>
+        <p>Student API Project | Flask, Python and SQLite</p>
     </footer>
 
     <script>
-        // Display JSON data in a readable format.
+        // Display JSON information in a readable format.
         function displayData(elementId, data) {
             const result = document.getElementById(elementId);
             result.replaceChildren();
@@ -176,12 +240,16 @@
                 const paragraph = document.createElement("p");
                 const label = document.createElement("strong");
 
-                label.textContent = key
-                    .replaceAll("_", " ")
-                    .replace(/\b\w/g, letter => letter.toUpperCase()) + ": ";
+                label.textContent =
+                    key.replaceAll("_", " ")
+                       .replace(/\b\w/g, letter => letter.toUpperCase())
+                    + ": ";
 
                 paragraph.appendChild(label);
-                paragraph.appendChild(document.createTextNode(String(value)));
+                paragraph.appendChild(
+                    document.createTextNode(String(value))
+                );
+
                 result.appendChild(paragraph);
             }
 
@@ -213,23 +281,26 @@
                 result.classList.add("error");
                 result.textContent =
                     "Unable to retrieve information. Please try again.";
+
                 return null;
             }
         }
 
-        // Student Information
+        // Student Information API.
         async function loadStudent() {
             await fetchData("/student", "studentResult");
         }
 
-        // Greeting API
+        // Greeting API.
         document.getElementById("greetingForm").addEventListener(
             "submit",
             async function(event) {
                 event.preventDefault();
 
-                const name = document.getElementById("nameInput").value.trim();
-                const result = document.getElementById("greetingResult");
+                const name =
+                    document.getElementById("nameInput").value.trim();
+                const result =
+                    document.getElementById("greetingResult");
 
                 if (!name) {
                     result.style.display = "block";
@@ -256,7 +327,6 @@
                         throw new Error("Greeting message is missing.");
                     }
 
-                    result.classList.remove("error");
                     result.textContent = data.message;
                 } catch (error) {
                     console.error("Greeting API failed:", error);
@@ -267,14 +337,114 @@
             }
         );
 
-        // Course Information
+        // Course Information API.
         async function loadCourse() {
             await fetchData("/course", "courseResult");
         }
 
-        // Custom Entertainment Endpoint
+        // Entertainment Favorites API.
         async function loadEntertainment() {
             await fetchData("/entertainment", "entertainmentResult");
+        }
+
+        // Load all students from the SQLite database.
+        async function loadStudents() {
+            const output = document.getElementById("studentList");
+
+            output.classList.remove("error");
+            output.textContent = "Loading student records...";
+
+            try {
+                const response = await fetch("/students");
+
+                if (!response.ok) {
+                    throw new Error("HTTP error: " + response.status);
+                }
+
+                const students = await response.json();
+                output.replaceChildren();
+
+                if (students.length === 0) {
+                    output.textContent = "No student records found.";
+                    return;
+                }
+
+                students.forEach(student => {
+                    const card = document.createElement("div");
+                    card.className = "student-record";
+
+                    const heading = document.createElement("strong");
+                    heading.textContent =
+                        student.student_id + " - " + student.name;
+
+                    const details = document.createElement("p");
+                    details.textContent =
+                        student.program + " | Year " + student.year +
+                        " | Section " + student.section;
+
+                    card.appendChild(heading);
+                    card.appendChild(details);
+                    output.appendChild(card);
+                });
+            } catch (error) {
+                console.error("Error loading students:", error);
+                output.classList.add("error");
+                output.textContent =
+                    "Unable to retrieve student records. Check that Flask is running and the database exists.";
+            }
+        }
+
+        // Filter database records by program.
+        async function loadStudentsByProgram() {
+            const program =
+                document.getElementById("programInput").value;
+            const output =
+                document.getElementById("programStudentList");
+
+            output.classList.remove("error");
+            output.textContent = "Loading filtered records...";
+
+            try {
+                const response = await fetch(
+                    "/students/program/" + encodeURIComponent(program)
+                );
+
+                if (!response.ok) {
+                    throw new Error("HTTP error: " + response.status);
+                }
+
+                const students = await response.json();
+                output.replaceChildren();
+
+                if (students.length === 0) {
+                    output.textContent =
+                        "No students found for this program.";
+                    return;
+                }
+
+                students.forEach(student => {
+                    const card = document.createElement("div");
+                    card.className = "student-record";
+
+                    const heading = document.createElement("strong");
+                    heading.textContent =
+                        student.student_id + " - " + student.name;
+
+                    const details = document.createElement("p");
+                    details.textContent =
+                        student.program + " | Year " + student.year +
+                        " | Section " + student.section;
+
+                    card.appendChild(heading);
+                    card.appendChild(details);
+                    output.appendChild(card);
+                });
+            } catch (error) {
+                console.error("Error filtering students:", error);
+                output.classList.add("error");
+                output.textContent =
+                    "Unable to retrieve filtered student records.";
+            }
         }
     </script>
 </body>
