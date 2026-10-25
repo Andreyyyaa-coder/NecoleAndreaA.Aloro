@@ -1,7 +1,17 @@
 
 import sqlite3
 
-conn = sqlite3.connect("students.db")
+DATABASE = "students.db"
+
+students = [
+    ("2026-00123", "JM Abordaje", "BSIT", 3, "A"),
+    ("2026-00124", "Katrina Pauleen Rivas", "BSN", 3, "B"),
+    ("2026-00125", "Jessica Ann Balcena", "BSIT", 3, "A"),
+    ("2026-00126", "Alyanna Daniella Joy Betoya", "BSN", 3, "C"),
+    ("2026-00127", "Joshua Porras", "BSN", 3, "A")
+]
+
+conn = sqlite3.connect(DATABASE)
 cursor = conn.cursor()
 
 cursor.execute("""
@@ -15,23 +25,20 @@ CREATE TABLE IF NOT EXISTS students (
 )
 """)
 
-# Reset the sample records each time this script runs.
-cursor.execute("DELETE FROM students")
+# Add sample records only if the table is empty.
+# This prevents existing records from being deleted.
+cursor.execute("SELECT COUNT(*) FROM students")
+count = cursor.fetchone()[0]
 
-students = [
-    ("2026-00123", "JM Abordaje", "BSIT", 3, "A"),
-    ("2026-00124", "Katrina Pauleen Rivas", "BSN", 3, "B"),
-    ("2026-00125", "Jessica Ann Balcena", "BSIT", 3, "A"),
-    ("2026-00126", "Alyanna Daniella Joy Betoya", "BSN", 3, "C"),
-    ("2026-00127", "Joshua Porras", "BSN", 3, "A")
-]
-
-cursor.executemany("""
-INSERT INTO students (student_id, name, program, year, section)
-VALUES (?, ?, ?, ?, ?)
-""", students)
+if count == 0:
+    cursor.executemany("""
+        INSERT INTO students
+            (student_id, name, program, year, section)
+        VALUES (?, ?, ?, ?, ?)
+    """, students)
+    print("Database created with five sample records.")
+else:
+    print(f"Database already contains {count} records. Existing records preserved.")
 
 conn.commit()
 conn.close()
-
-print("Database created successfully.")
