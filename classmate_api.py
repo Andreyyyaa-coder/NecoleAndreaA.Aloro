@@ -1,19 +1,33 @@
 
 import requests
 
-url = "https://jaya-mekaela-almodiel.onrender.com/student"
+PARTNER_API_URL = (
+    "https://balcenajessicaann-2axr.onrender.com/api/students"
+)
+
+record = {
+    "student_id": "EXT-001",
+    "name": "Sample Exchange Record",
+    "program": "BSIT",
+    "year": 1,
+    "section": "A",
+    "source": "Partner API"
+}
 
 try:
-    response = requests.get(url, timeout=30)
-    print("Status Code:", response.status_code)
+    response = requests.post(
+        PARTNER_API_URL,
+        json=record,
+        timeout=30
+    )
 
-    if response.status_code == 200:
-        data = response.json()
-        print("Classmate's API Data:")
-        print(data)
-    else:
-        print("Request failed.")
+    print("Status Code:", response.status_code)
+    print("Response:")
+
+    try:
+        print(response.json())
+    except ValueError:
         print(response.text)
 
-except requests.exceptions.RequestException as error:
-    print("Connection error:", error)
+except requests.RequestException as error:
+    print("Request failed:", error)
